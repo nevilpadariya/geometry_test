@@ -1,0 +1,18 @@
+{
+    "questions": [
+      {
+        "id": 1,
+        "imageUrl": "https://raw.githubusercontent.com/yourusername/repo/main/images/triangle1.png",
+        "question": "What is the area of this triangle?",
+        "expectedAnswer": "24 square units",
+        "hint": "Remember: Area = (base × height) ÷ 2"
+      },
+      {
+        "id": 2,
+        "imageUrl": "https://raw.githubusercontent.com/yourusername/repo/main/images/circle1.png",
+        "question": "What is the circumference of this circle?",
+        "expectedAnswer": "31.4 units",
+        "hint": "Remember: Circumference = 2πr"
+      }
+    ]
+  }
