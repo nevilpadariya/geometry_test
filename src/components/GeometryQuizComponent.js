@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Card,
   CardContent,
@@ -6,33 +7,58 @@ import {
   CardActions,
   Typography,
   Button,
-  TextField,
-  IconButton,
+  Alert,
 } from '@mui/material';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import Alert from '@mui/material/Alert';
-import questions from './Questions/EuclideanQue.json';
+import questionsData from './Questions/EuclideanQue.json';
+
+const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 
 const GeometryQuiz = () => {
+  const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
-  const [showHint, setShowHint] = useState(false);
 
-  const currentQuestion = questions.questions[currentQuestionIndex];
+  // Load questions from JSON dynamically
+  useEffect(() => {
+    setQuestions(questionsData.questions);
+  }, []);
 
-  const checkAnswer = () => {
-    const isCorrect = answer.toLowerCase() === currentQuestion.expectedAnswer.toLowerCase();
-    setFeedback({
-      isCorrect,
-      message: isCorrect
-        ? 'Correct! Well done!'
-        : 'Not quite right. Try again!',
-    });
+  const currentQuestion = questions[currentQuestionIndex];
+
+  const testAnswer = async () => {
+    try {
+      const response = await axios.post(
+        CLAUDE_API_URL,
+        {
+          prompt: `Provide the answer for the following question: "${currentQuestion.question}"`,
+          model: 'claude-1',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.REACT_APP_CLAUDE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const aiAnswer = response.data.output.trim();
+      const isCorrect = aiAnswer.toLowerCase() === currentQuestion.expectedAnswer.toLowerCase();
+
+      setFeedback({
+        isCorrect,
+        message: isCorrect ? 'Test result: Pass' : 'Test result: Fail',
+      });
+    } catch (error) {
+      setFeedback({
+        isCorrect: false,
+        message: 'Error contacting Claude AI. Please try again later.',
+      });
+    }
   };
 
   const nextQuestion = () => {
-    if (currentQuestionIndex < questions.questions.length - 1) {
+    if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
       resetQuestion();
     }
@@ -46,10 +72,12 @@ const GeometryQuiz = () => {
   };
 
   const resetQuestion = () => {
-    setAnswer('');
     setFeedback(null);
-    setShowHint(false);
   };
+
+  if (questions.length === 0) {
+    return <Typography>Loading questions...</Typography>;
+  }
 
   return (
     <Card sx={{ maxWidth: 600, margin: 'auto', mt: 4, p: 2 }}>
@@ -58,7 +86,6 @@ const GeometryQuiz = () => {
         titleTypographyProps={{ variant: 'h5', textAlign: 'center' }}
       />
       <CardContent>
-        {/* Image Display */}
         {currentQuestion.imageUrl && (
           <div style={{ textAlign: 'center', marginBottom: 16 }}>
             <img
@@ -68,56 +95,18 @@ const GeometryQuiz = () => {
             />
           </div>
         )}
-
-        {/* Question Section */}
         <Typography variant="body1" gutterBottom>
           {currentQuestion.question}
         </Typography>
-        <TextField
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={testAnswer}
           fullWidth
-          label="Enter your answer"
-          variant="outlined"
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          sx={{ mb: 2 }}
-        />
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={checkAnswer}
-            disabled={!answer.trim()}
-            fullWidth
-          >
-            Submit Answer
-          </Button>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => setShowHint(!showHint)}
-            fullWidth
-          >
-            {showHint ? 'Hide Hint' : 'Show Hint'}
-          </Button>
-        </div>
-
-        {/* Hint Section */}
-        {showHint && (
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            sx={{
-              mt: 2,
-              p: 2,
-              bgcolor: '#f9f9f9',
-              borderRadius: 1,
-            }}
-          >
-            {currentQuestion.hint}
-          </Typography>
-        )}
-
-        {/* Feedback Section */}
+          sx={{ mt: 2 }}
+        >
+          Test
+        </Button>
         {feedback && (
           <Alert
             severity={feedback.isCorrect ? 'success' : 'error'}
@@ -140,7 +129,7 @@ const GeometryQuiz = () => {
           variant="outlined"
           endIcon={<ArrowForward />}
           onClick={nextQuestion}
-          disabled={currentQuestionIndex === questions.questions.length - 1}
+          disabled={currentQuestionIndex === questions.length - 1}
         >
           Next
         </Button>
