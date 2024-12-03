@@ -12,14 +12,15 @@ import {
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import questionsData from './Questions/EuclideanQue.json';
 
-const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
+// It's better to use an environment variable for the API URL
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api/claude';
 
 const GeometryQuiz = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [feedback, setFeedback] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Load questions from JSON dynamically
   useEffect(() => {
     setQuestions(questionsData.questions);
   }, []);
@@ -27,33 +28,45 @@ const GeometryQuiz = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   const testAnswer = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.post(
-        CLAUDE_API_URL,
+        API_URL,
         {
-          prompt: `Provide the answer for the following question: "${currentQuestion.question}"`,
-          model: 'claude-1',
+          messages: [
+            {
+              role: "user",
+              content: `Provide the answer for the following geometry question: "${currentQuestion.question}". Please provide only the final answer without any explanation.`
+            }
+          ],
+          model: "claude-3-sonnet-20240229",
+          max_tokens: 100,
+          temperature: 0
         },
         {
           headers: {
-            Authorization: `Bearer ${process.env.REACT_APP_CLAUDE_API_KEY}`,
             'Content-Type': 'application/json',
-          },
+          }
         }
       );
 
-      const aiAnswer = response.data.output.trim();
-      const isCorrect = aiAnswer.toLowerCase() === currentQuestion.expectedAnswer.toLowerCase();
+      // Handle the new Claude API response format
+      const aiAnswer = response.data.content || '';
+      const isCorrect = aiAnswer.toLowerCase().includes(currentQuestion.expectedAnswer.toLowerCase());
 
       setFeedback({
         isCorrect,
         message: isCorrect ? 'Test result: Pass' : 'Test result: Fail',
+        aiResponse: aiAnswer
       });
     } catch (error) {
+      console.error('API Error:', error);
       setFeedback({
         isCorrect: false,
-        message: 'Error contacting Claude AI. Please try again later.',
+        message: `Error: ${error.response?.data?.error || 'Failed to contact the API. Please try again.'}`,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,10 +115,11 @@ const GeometryQuiz = () => {
           variant="contained"
           color="primary"
           onClick={testAnswer}
+          disabled={isLoading}
           fullWidth
           sx={{ mt: 2 }}
         >
-          Test
+          {isLoading ? 'Testing...' : 'Test'}
         </Button>
         {feedback && (
           <Alert
