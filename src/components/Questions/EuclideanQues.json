@@ -1,0 +1,39 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "imageUrl": "/assets/images/AnalyticalGeometry/A-G-1.jpeg",
+      "question": "Find the Disance between the points A(1, 4) and B(-3, 2).",
+      "expectedAnswer": "2√5",
+      "hint": "find the Distance between points"
+    },
+    {
+      "id": 2,
+      "imageUrl": "/assets/images/AnalyticalGeometry/A-G-2.jpeg",
+      "question": "If P1= (x,0), P2 = (2,5) and P1P2 = 5√2. Find X",
+      "expectedAnswer": "7",
+      "hint": "Use Distance Formula"
+    },
+    {
+      "id": 3,
+      "imageUrl": "/assets/images/AnalyticalGeometry/A-G-3.jpeg",
+      "question": "Find the point one third of the way from (2, 5) to (8, -1).",
+      "expectedAnswer": "x=7 or x=-3",
+      "hint": "Use Distance Formula"
+    },
+    {
+      "id": 4,
+      "imageUrl": "/assets/images/AnalyticalGeometry/A-G-4.jpeg",
+      "question": "If A(2,-4) and B(8,-1) and AB/AC = 3/5. Find C",
+      "expectedAnswer": "x=12 or y=1",
+      "hint": "Use point of Division Formula"
+    },
+    {
+      "id": 5,
+      "imageUrl": "/assets/images/AnalyticalGeometry/A-G-5.jpeg",
+      "question": "If A = (-1, 5) and B = (7, 1). AP/PB = 3. Find P",
+      "expectedAnswer": "P(5,2)",
+      "hint": "Use Distance Formula"
+    }
+  ]
+}
