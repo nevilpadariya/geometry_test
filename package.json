@@ -2,6 +2,7 @@
   "name": "geometry_test",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
     "@emotion/react": "^11.13.5",
@@ -11,21 +12,31 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.12.0",
+    "axios": "^1.13.5",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.0.2",
-    "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2",
+    "vitest": "^2.1.0",
+    "@vitest/ui": "^2.1.0",
+    "jsdom": "^24.1.0"
+  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "overrides": {
+    "qs": "^6.14.2"
   },
   "eslintConfig": {
     "extends": [

@@ -35,7 +35,7 @@ const DifferentialGeometryQuizComponent = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('http://localhost:3001/validate-answer', {
+      const response = await fetch('/validate-answer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
